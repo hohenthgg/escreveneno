@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin — Texto unificado</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --paper: #fffdf8;
+      --text: #25221e;
+      --muted: #746d63;
+      --line: rgba(37, 34, 30, .14);
+      --accent: #7b4b32;
+      --ok: #3d6b46;
+      --aviso: #8a6321;
+      --erro: #9c3b2e;
+      --ui: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #151412;
+        --paper: #1d1b18;
+        --text: #e9e2d8;
+        --muted: #aaa195;
+        --line: rgba(233, 226, 216, .14);
+        --accent: #d18a62;
+        --ok: #85b98d;
+        --aviso: #d8ab63;
+        --erro: #e69182;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.5 var(--ui);
+    }
+
+    button {
+      min-height: 38px;
+      padding: 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--text);
+      font: 600 14px/1 var(--ui);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    button:hover:not(:disabled) { border-color: var(--accent); }
+    button:active:not(:disabled) { transform: scale(.97); }
+    button:disabled { opacity: .5; cursor: default; }
+
+    button.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--paper);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      color: var(--text);
+      font: 15px/1.4 var(--ui);
+    }
+
+    input:focus-visible, button:focus-visible, [contenteditable]:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font: 600 12px/1.6 var(--ui);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    label input { margin-top: 6px; text-transform: none; letter-spacing: normal; }
+
+    /* ---------- login ---------- */
+
+    .gate {
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .gate form {
+      width: min(100%, 340px);
+      padding: 30px 26px 26px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+      box-shadow: 0 18px 40px rgba(45, 36, 28, .08);
+    }
+
+    .gate h1 {
+      margin: 0 0 4px;
+      font: 700 21px/1.2 Georgia, "Times New Roman", serif;
+    }
+
+    .gate p.sub {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .gate button { width: 100%; }
+
+    .erro {
+      min-height: 18px;
+      margin: 0 0 12px;
+      color: var(--erro);
+      font-size: 13px;
+    }
+
+    /* ---------- barras ---------- */
+
+    .topo {
+      position: sticky;
+      top: 0;
+      z-index: 12;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      padding: max(10px, env(safe-area-inset-top)) 14px 10px;
+    }
+
+    .bar .nome {
+      font: 700 15px/1 Georgia, "Times New Roman", serif;
+      letter-spacing: .02em;
+    }
+
+    .estado {
+      flex: 1 1 140px;
+      min-width: 0;
+      overflow: hidden;
+      color: var(--muted);
+      font: 600 12px/1.4 var(--ui);
+      letter-spacing: .03em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .estado.ok { color: var(--ok); }
+    .estado.aviso { color: var(--aviso); }
+    .estado.erro { color: var(--erro); white-space: normal; }
+
+    .format {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 0 14px 10px;
+    }
+
+    .format button {
+      min-width: 38px;
+      padding: 8px 11px;
+    }
+
+    .format button[aria-pressed="true"] {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--paper);
+    }
+
+    .format .sep {
+      width: 1px;
+      margin: 4px 3px;
+      background: var(--line);
+    }
+
+    /* ---------- editor ---------- */
+
+    main {
+      width: min(100%, 860px);
+      margin: 0 auto;
+      padding: 22px 16px 60px;
+    }
+
+    #editor {
+      padding: clamp(26px, 5vw, 54px) clamp(20px, 5vw, 60px);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+      color: var(--text);
+      font: 19px/1.78 Georgia, "Times New Roman", serif;
+      caret-color: var(--accent);
+      hyphens: none;
+      outline: none;
+      box-shadow: 0 0 40px rgba(45, 36, 28, .05);
+    }
+
+    #editor p {
+      margin: 0 0 1.45em;
+      overflow-wrap: break-word;
+    }
+
+    #editor h2 {
+      margin: 2.4em 0 1.35em;
+      padding-top: 1.1em;
+      border-top: 1px solid var(--line);
+      color: var(--accent);
+      font: 700 .77em/1.35 var(--ui);
+      letter-spacing: .115em;
+    }
+
+    #editor > :first-child {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    #editor a { color: var(--accent); }
+
+    .foot {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 16px;
+      padding: 14px 4px 0;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    .foot button {
+      min-height: 30px;
+      padding: 5px 11px;
+      font-size: 12.5px;
+    }
+
+    /* ---------- ajustes ---------- */
+
+    dialog {
+      width: min(100%, 420px);
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+      color: var(--text);
+    }
+
+    dialog::backdrop { background: rgba(20, 16, 12, .45); }
+
+    dialog h2 {
+      margin: 0 0 6px;
+      font: 700 18px/1.2 Georgia, "Times New Roman", serif;
+    }
+
+    dialog .dica {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    dialog .acoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    dialog .acoes button { flex: 1 1 auto; }
+
+    .dupla { display: flex; gap: 10px; }
+    .dupla > * { flex: 1 1 0; min-width: 0; }
+
+    @media (max-width: 560px) {
+      .bar .nome { display: none; }
+      .bar .estado { flex-basis: 100%; order: 3; }
+      .bar, .format { gap: 6px; }
+      .bar button, .format button {
+        min-height: 34px;
+        min-width: 34px;
+        padding: 6px 10px;
+        font-size: 13px;
+      }
+      #editor { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ---------------- login ---------------- -->
+  <div class="gate" id="tela-login">
+    <form id="login" autocomplete="on">
+      <h1>Entrar</h1>
+      <p class="sub">Edição do texto unificado.</p>
+      <label for="usuario">Login
+        <input id="usuario" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+      </label>
+      <label for="senha">Senha
+        <input id="senha" name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <p class="erro" id="erro-login" role="alert"></p>
+      <button class="primary" type="submit">Entrar</button>
+    </form>
+  </div>
+
+  <!-- ---------------- editor ---------------- -->
+  <div id="app" hidden>
+    <div class="topo">
+    <header class="bar">
+      <span class="nome">Texto unificado</span>
+      <span class="estado" id="estado" role="status" aria-live="polite"></span>
+      <button id="ver" type="button" title="Abrir o site publicado">Ver site</button>
+      <button id="ajustes-abrir" type="button" title="Ajustes de publicação">Ajustes</button>
+      <button id="publicar" class="primary" type="button">Publicar</button>
+      <button id="sair" type="button">Sair</button>
+    </header>
+
+    <nav class="format" aria-label="Formatação">
+      <button type="button" data-cmd="bold" aria-pressed="false" title="Negrito (Ctrl+B)"><b>B</b></button>
+      <button type="button" data-cmd="italic" aria-pressed="false" title="Itálico (Ctrl+I)"><i>I</i></button>
+      <button type="button" data-cmd="underline" aria-pressed="false" title="Sublinhado (Ctrl+U)"><u>S</u></button>
+      <span class="sep" aria-hidden="true"></span>
+      <button type="button" data-block="h2" aria-pressed="false" title="Título de seção">Título</button>
+      <button type="button" data-block="p" aria-pressed="false" title="Parágrafo normal">Parágrafo</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button type="button" data-cmd="createLink" title="Inserir link">Link</button>
+      <button type="button" data-cmd="unlink" title="Remover link">Tirar link</button>
+      <button type="button" data-cmd="removeFormat" title="Limpar formatação">Limpar</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button type="button" data-cmd="undo" title="Desfazer (Ctrl+Z)">↶</button>
+      <button type="button" data-cmd="redo" title="Refazer (Ctrl+Shift+Z)">↷</button>
+    </nav>
+    </div>
+
+    <main>
+      <article id="editor" contenteditable="true" spellcheck="true" aria-label="Texto"></article>
+      <div class="foot">
+        <span id="contagem"></span>
+        <span id="publicado"></span>
+        <button id="descartar" type="button">Descartar rascunho</button>
+        <button id="baixar" type="button">Baixar HTML</button>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="ajustes">
+    <form method="dialog" id="form-ajustes">
+      <h2>Ajustes de publicação</h2>
+      <p class="dica">Para o botão <strong>Publicar</strong> gravar direto no GitHub, cole um token com permissão
+        <em>Contents: Read and write</em> neste repositório. Sem token, o Publicar apenas baixa o HTML pronto.
+        O token fica guardado só neste navegador.</p>
+      <label for="cfg-token">Token do GitHub
+        <input id="cfg-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_...">
+      </label>
+      <div class="dupla">
+        <label for="cfg-owner">Dono
+          <input id="cfg-owner" autocomplete="off" spellcheck="false">
+        </label>
+        <label for="cfg-repo">Repositório
+          <input id="cfg-repo" autocomplete="off" spellcheck="false">
+        </label>
+      </div>
+      <label for="cfg-branch">Branch
+        <input id="cfg-branch" autocomplete="off" spellcheck="false">
+      </label>
+      <p class="erro" id="erro-ajustes" role="status"></p>
+      <div class="acoes">
+        <button type="button" id="testar">Testar conexão</button>
+        <button type="button" id="cancelar">Fechar</button>
+        <button type="submit" class="primary" id="salvar-ajustes">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    (() => {
+      const USUARIO = 'euai';
+      const SENHA = 'euai';
+
+      const CHAVE_AUTH = 'admin-auth';
+      const CHAVE_RASCUNHO = 'admin-rascunho';
+      const CHAVE_CFG = 'admin-config';
+      const CHAVE_PUBLICADO_EM = 'admin-publicado-em';
+
+      // O texto vive entre estas marcas nos arquivos do site.
+      const ARTIGO = /(<article id="textContent">)([\s\S]*?)(<\/article>)/;
+      const PADRAO = { token: '', owner: 'hohenthgg', repo: 'escreveneno', branch: 'main' };
+      const ARQUIVOS = ['index.html', 'Ritual.html'];
+
+      const $ = (id) => document.getElementById(id);
+      const guarda = {
+        ler(chave) { try { return localStorage.getItem(chave); } catch { return null; } },
+        gravar(chave, valor) { try { localStorage.setItem(chave, valor); } catch {} },
+        apagar(chave) { try { localStorage.removeItem(chave); } catch {} }
+      };
+
+      let cfg = Object.assign({}, PADRAO);
+      try { Object.assign(cfg, JSON.parse(guarda.ler(CHAVE_CFG) || '{}')); } catch {}
+
+      const editor = $('editor');
+      let publicado = null;   // HTML do artigo como está no site
+      let cronometro;
+
+      const dizer = (texto, tipo) => {
+        const alvo = $('estado');
+        alvo.textContent = texto;
+        alvo.className = 'estado' + (tipo ? ' ' + tipo : '');
+      };
+
+      const escapar = (texto) => texto
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      // Serializa o editor como HTML limpo: um bloco por linha, sem lixo de
+      // contenteditable, com as mesmas tags que a folha de estilo do site conhece.
+      const agora = () => {
+        const blocos = [];
+        editor.childNodes.forEach((no) => {
+          if (no.nodeType === Node.TEXT_NODE) {
+            const texto = no.textContent.trim();
+            if (texto) blocos.push('<p>' + escapar(texto) + '</p>');
+            return;
+          }
+          if (no.nodeType !== Node.ELEMENT_NODE) return;
+          const el = no.cloneNode(true);
+          el.removeAttribute('style');
+          el.querySelectorAll('[style]').forEach((filho) => filho.removeAttribute('style'));
+          if (!el.textContent.trim()) return;
+          if (el.tagName === 'H2') {
+            el.className = 'day-heading';
+          } else if (el.tagName !== 'P') {
+            const p = document.createElement('p');
+            p.innerHTML = el.innerHTML;
+            blocos.push(p.outerHTML);
+            return;
+          } else {
+            el.removeAttribute('class');
+          }
+          blocos.push(el.outerHTML);
+        });
+        return blocos.join('\n');
+      };
+
+      const contar = () => {
+        const texto = editor.textContent.trim();
+        const palavras = texto ? texto.split(/\s+/).length : 0;
+        $('contagem').textContent = palavras.toLocaleString('pt-BR') + ' palavras · ' +
+          texto.length.toLocaleString('pt-BR') + ' caracteres';
+      };
+
+      const marcarPublicacao = () => {
+        const quando = guarda.ler(CHAVE_PUBLICADO_EM);
+        $('publicado').textContent = quando
+          ? 'publicado em ' + new Date(quando).toLocaleString('pt-BR')
+          : '';
+      };
+
+      const situacao = () => {
+        const html = agora();
+        if (publicado !== null && html === publicado) dizer('tudo publicado', 'ok');
+        else dizer('rascunho salvo · não publicado', 'aviso');
+      };
+
+      const salvarRascunho = () => {
+        guarda.gravar(CHAVE_RASCUNHO, agora());
+        situacao();
+      };
+
+      const agendarSalvar = () => {
+        clearTimeout(cronometro);
+        cronometro = setTimeout(salvarRascunho, 600);
+      };
+
+      // ---------- carregar o texto que está no ar ----------
+
+      const extrair = (bruto) => {
+        const achado = ARTIGO.exec(bruto);
+        return achado ? achado[2].trim() : null;
+      };
+
+      async function carregar() {
+        dizer('carregando o texto publicado…');
+        try {
+          const resposta = await fetch('../index.html', { cache: 'no-store' });
+          if (resposta.ok) publicado = extrair(await resposta.text());
+        } catch {}
+
+        const rascunho = guarda.ler(CHAVE_RASCUNHO);
+        if (rascunho && rascunho !== publicado) {
+          editor.innerHTML = rascunho;
+          dizer('rascunho não publicado recuperado', 'aviso');
+        } else if (publicado !== null) {
+          editor.innerHTML = publicado;
+          dizer('tudo publicado', 'ok');
+        } else {
+          editor.innerHTML = '<p>Não consegui ler o texto publicado. Abra o /admin pelo endereço do site, não como arquivo solto no computador.</p>';
+          dizer('não carreguei o texto do site', 'erro');
+        }
+        contar();
+        marcarPublicacao();
+      }
+
+      // ---------- publicar ----------
+
+      const paraBase64 = (texto) => {
+        const bytes = new TextEncoder().encode(texto);
+        let binario = '';
+        bytes.forEach((b) => { binario += String.fromCharCode(b); });
+        return btoa(binario);
+      };
+
+      const deBase64 = (b64) => {
+        const binario = atob(b64.replace(/\s/g, ''));
+        const bytes = Uint8Array.from(binario, (ch) => ch.charCodeAt(0));
+        return new TextDecoder().decode(bytes);
+      };
+
+      const trocarArtigo = (bruto, html) =>
+        bruto.replace(ARTIGO, (todo, abre, antigo, fecha) => abre + '\n' + html + '\n    ' + fecha);
+
+      const cabecalhos = () => ({
+        Authorization: 'Bearer ' + cfg.token,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      });
+
+      const motivo = async (resposta) => {
+        try {
+          const corpo = await resposta.json();
+          return corpo && corpo.message ? corpo.message : resposta.status;
+        } catch { return resposta.status; }
+      };
+
+      async function gravar(caminho, html) {
+        const base = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + caminho;
+        dizer('publicando ' + caminho + '…');
+
+        const atual = await fetch(base + '?ref=' + encodeURIComponent(cfg.branch),
+          { headers: cabecalhos(), cache: 'no-store' });
+        if (!atual.ok) throw new Error('não li ' + caminho + ': ' + await motivo(atual));
+
+        const meta = await atual.json();
+        const bruto = deBase64(meta.content);
+        if (!ARTIGO.test(bruto)) throw new Error('não achei o bloco do texto em ' + caminho);
+
+        const novo = trocarArtigo(bruto, html);
+        if (novo === bruto) return false;
+
+        const envio = await fetch(base, {
+          method: 'PUT',
+          headers: Object.assign({ 'Content-Type': 'application/json' }, cabecalhos()),
+          body: JSON.stringify({
+            message: 'Atualiza o texto pelo /admin',
+            content: paraBase64(novo),
+            sha: meta.sha,
+            branch: cfg.branch
+          })
+        });
+        if (!envio.ok) throw new Error('não gravei ' + caminho + ': ' + await motivo(envio));
+        return true;
+      }
+
+      const baixarArquivo = (nome, conteudo) => {
+        const url = URL.createObjectURL(new Blob([conteudo], { type: 'text/html' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = nome;
+        link.click();
+        URL.revokeObjectURL(url);
+      };
+
+      async function baixarHtml(html) {
+        const resposta = await fetch('../index.html', { cache: 'no-store' });
+        if (!resposta.ok) throw new Error('não li o index.html do site');
+        baixarArquivo('index.html', trocarArtigo(await resposta.text(), html));
+      }
+
+      async function publicar() {
+        clearTimeout(cronometro);
+        const html = agora();
+        if (!html) { dizer('o texto está vazio — nada a publicar', 'erro'); return; }
+        guarda.gravar(CHAVE_RASCUNHO, html);
+
+        $('publicar').disabled = true;
+        try {
+          if (!cfg.token) {
+            await baixarHtml(html);
+            dizer('sem token: baixei o index.html pronto para você subir', 'aviso');
+            return;
+          }
+          for (const caminho of ARQUIVOS) await gravar(caminho, html);
+          publicado = html;
+          guarda.gravar(CHAVE_PUBLICADO_EM, new Date().toISOString());
+          marcarPublicacao();
+          dizer('publicado — o site atualiza em instantes', 'ok');
+        } catch (erro) {
+          dizer('não publicou: ' + erro.message, 'erro');
+        } finally {
+          $('publicar').disabled = false;
+        }
+      }
+
+      // ---------- formatação ----------
+
+      const marcarTitulos = () => {
+        editor.querySelectorAll('h2').forEach((h) => { h.className = 'day-heading'; });
+      };
+
+      const blocoAtual = () => {
+        const selecao = getSelection();
+        if (!selecao || !selecao.anchorNode) return null;
+        let no = selecao.anchorNode;
+        while (no && no !== editor) {
+          if (no.nodeType === Node.ELEMENT_NODE && no.parentNode === editor) return no.tagName.toLowerCase();
+          no = no.parentNode;
+        }
+        return null;
+      };
+
+      const atualizarBotoes = () => {
+        if (!editor.contains(getSelection().anchorNode)) return;
+        document.querySelectorAll('[data-cmd]').forEach((botao) => {
+          const cmd = botao.dataset.cmd;
+          if (cmd !== 'bold' && cmd !== 'italic' && cmd !== 'underline') return;
+          let ativo = false;
+          try { ativo = document.queryCommandState(cmd); } catch {}
+          botao.setAttribute('aria-pressed', String(ativo));
+        });
+        const bloco = blocoAtual();
+        document.querySelectorAll('[data-block]').forEach((botao) => {
+          botao.setAttribute('aria-pressed', String(botao.dataset.block === bloco));
+        });
+      };
+
+      const aplicar = (fn) => {
+        editor.focus();
+        fn();
+        marcarTitulos();
+        atualizarBotoes();
+        agendarSalvar();
+      };
+
+      document.querySelectorAll('[data-cmd], [data-block]').forEach((botao) => {
+        // mousedown com preventDefault para a seleção no texto não se perder
+        botao.addEventListener('mousedown', (evento) => evento.preventDefault());
+        botao.addEventListener('click', () => {
+          const bloco = botao.dataset.block;
+          if (bloco) return aplicar(() => document.execCommand('formatBlock', false, bloco));
+
+          const cmd = botao.dataset.cmd;
+          if (cmd === 'createLink') {
+            const endereco = prompt('Endereço do link:', 'https://');
+            if (!endereco) return;
+            return aplicar(() => {
+              if (getSelection().isCollapsed) document.execCommand('insertText', false, endereco);
+              document.execCommand('createLink', false, endereco);
+            });
+          }
+          aplicar(() => document.execCommand(cmd, false, null));
+        });
+      });
+
+      document.addEventListener('selectionchange', () => {
+        if (document.activeElement === editor) atualizarBotoes();
+      });
+
+      editor.addEventListener('input', () => { contar(); agendarSalvar(); });
+
+      // colar entra como texto puro, sem formatação de outras páginas
+      editor.addEventListener('paste', (evento) => {
+        const texto = evento.clipboardData && evento.clipboardData.getData('text/plain');
+        if (texto == null) return;
+        evento.preventDefault();
+        document.execCommand('insertText', false, texto);
+      });
+
+      addEventListener('keydown', (evento) => {
+        if ((evento.ctrlKey || evento.metaKey) && evento.key.toLowerCase() === 's') {
+          evento.preventDefault();
+          clearTimeout(cronometro);
+          salvarRascunho();
+        }
+      });
+
+      addEventListener('beforeunload', (evento) => {
+        if (!$('app').hidden && publicado !== null && agora() !== publicado) {
+          evento.preventDefault();
+          evento.returnValue = '';
+        }
+      });
+
+      // ---------- botões do rodapé e da barra ----------
+
+      $('descartar').addEventListener('click', () => {
+        if (publicado === null) { dizer('ainda não sei qual é o texto publicado', 'erro'); return; }
+        if (!confirm('Descartar o rascunho e voltar ao texto que está no ar?')) return;
+        clearTimeout(cronometro);
+        editor.innerHTML = publicado;
+        guarda.apagar(CHAVE_RASCUNHO);
+        contar();
+        dizer('rascunho descartado', 'ok');
+      });
+
+      $('baixar').addEventListener('click', async () => {
+        try {
+          await baixarHtml(agora());
+          dizer('index.html baixado', 'ok');
+        } catch (erro) {
+          dizer('não baixou: ' + erro.message, 'erro');
+        }
+      });
+
+      $('publicar').addEventListener('click', publicar);
+      $('ver').addEventListener('click', () => open('../', '_blank'));
+
+      $('sair').addEventListener('click', () => {
+        guarda.apagar(CHAVE_AUTH);
+        location.reload();
+      });
+
+      // ---------- ajustes ----------
+
+      const dialogo = $('ajustes');
+
+      $('ajustes-abrir').addEventListener('click', () => {
+        $('cfg-token').value = cfg.token;
+        $('cfg-owner').value = cfg.owner;
+        $('cfg-repo').value = cfg.repo;
+        $('cfg-branch').value = cfg.branch;
+        $('erro-ajustes').textContent = '';
+        $('erro-ajustes').style.color = '';
+        dialogo.showModal();
+      });
+
+      $('cancelar').addEventListener('click', () => dialogo.close());
+
+      $('form-ajustes').addEventListener('submit', () => {
+        cfg = {
+          token: $('cfg-token').value.trim(),
+          owner: $('cfg-owner').value.trim() || PADRAO.owner,
+          repo: $('cfg-repo').value.trim() || PADRAO.repo,
+          branch: $('cfg-branch').value.trim() || PADRAO.branch
+        };
+        guarda.gravar(CHAVE_CFG, JSON.stringify(cfg));
+        dizer(cfg.token ? 'ajustes salvos' : 'ajustes salvos — sem token, Publicar só baixa o arquivo', 'ok');
+      });
+
+      $('testar').addEventListener('click', async () => {
+        const aviso = $('erro-ajustes');
+        const token = $('cfg-token').value.trim();
+        const owner = $('cfg-owner').value.trim() || PADRAO.owner;
+        const repo = $('cfg-repo').value.trim() || PADRAO.repo;
+        if (!token) { aviso.style.color = ''; aviso.textContent = 'Sem token: o Publicar vai apenas baixar o arquivo.'; return; }
+        aviso.style.color = '';
+        aviso.textContent = 'testando…';
+        try {
+          const resposta = await fetch('https://api.github.com/repos/' + owner + '/' + repo, {
+            headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' },
+            cache: 'no-store'
+          });
+          if (!resposta.ok) throw new Error(String(await motivo(resposta)));
+          const dados = await resposta.json();
+          const podeGravar = dados.permissions && dados.permissions.push;
+          aviso.style.color = podeGravar ? 'var(--ok)' : 'var(--aviso)';
+          aviso.textContent = podeGravar
+            ? 'conexão certa: dá para publicar em ' + dados.full_name
+            : 'conectou em ' + dados.full_name + ', mas o token não tem permissão de escrita';
+        } catch (erro) {
+          aviso.style.color = 'var(--erro)';
+          aviso.textContent = 'falhou: ' + erro.message;
+        }
+      });
+
+      // ---------- entrada ----------
+
+      function abrirEditor() {
+        $('tela-login').hidden = true;
+        $('app').hidden = false;
+        try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch {}
+        carregar();
+      }
+
+      $('login').addEventListener('submit', (evento) => {
+        evento.preventDefault();
+        const usuario = $('usuario').value.trim();
+        const senha = $('senha').value;
+        if (usuario === USUARIO && senha === SENHA) {
+          guarda.gravar(CHAVE_AUTH, 'ok');
+          abrirEditor();
+        } else {
+          $('erro-login').textContent = 'Login ou senha incorretos.';
+          $('senha').value = '';
+          $('senha').focus();
+        }
+      });
+
+      if (guarda.ler(CHAVE_AUTH) === 'ok') abrirEditor();
+    })();
+  </script>
+</body>
+</html>
