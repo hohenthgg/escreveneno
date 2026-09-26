@@ -534,6 +534,10 @@
       const trocarArtigo = (bruto, html) =>
         bruto.replace(ARTIGO, (todo, abre, antigo, fecha) => abre + '\n' + html + '\n    ' + fecha);
 
+      const SEM_ESCRITA = 'o token só tem permissão de leitura. No GitHub, abra o token em ' +
+        'Settings > Developer settings > Personal access tokens > Fine-grained tokens, clique nele e ' +
+        'mude Repository permissions > Contents para "Read and write".';
+
       const cabecalhos = () => ({
         Authorization: 'Bearer ' + cfg.token,
         Accept: 'application/vnd.github+json',
@@ -553,7 +557,11 @@
 
         const atual = await fetch(base + '?ref=' + encodeURIComponent(cfg.branch),
           { headers: cabecalhos(), cache: 'no-store' });
-        if (!atual.ok) throw new Error('não li ' + caminho + ': ' + await motivo(atual));
+        if (!atual.ok) {
+          if (atual.status === 404) throw new Error('não achei ' + caminho + ' na branch ' + cfg.branch +
+            ' de ' + cfg.owner + '/' + cfg.repo + ' — confira os Ajustes');
+          throw new Error('não li ' + caminho + ': ' + await motivo(atual));
+        }
 
         const meta = await atual.json();
         const bruto = deBase64(meta.content);
@@ -572,7 +580,10 @@
             branch: cfg.branch
           })
         });
-        if (!envio.ok) throw new Error('não gravei ' + caminho + ': ' + await motivo(envio));
+        if (!envio.ok) {
+          if (envio.status === 403) throw new Error(SEM_ESCRITA);
+          throw new Error('não gravei ' + caminho + ': ' + await motivo(envio));
+        }
         return true;
       }
 
@@ -604,8 +615,10 @@
             dizer('sem token: baixei o index.html pronto para você subir', 'aviso');
             return;
           }
-          for (const caminho of ARQUIVOS) await gravar(caminho, html);
+          let gravou = false;
+          for (const caminho of ARQUIVOS) gravou = (await gravar(caminho, html)) || gravou;
           publicado = html;
+          if (!gravou) { dizer('nada mudou — o site já está com este texto', 'ok'); return; }
           guarda.gravar(CHAVE_PUBLICADO_EM, new Date().toISOString());
           marcarPublicacao();
           dizer('publicado — o site atualiza em instantes', 'ok');
@@ -769,18 +782,52 @@
         if (!token) { aviso.style.color = ''; aviso.textContent = 'Sem token: o Publicar vai apenas baixar o arquivo.'; return; }
         aviso.style.color = '';
         aviso.textContent = 'testando…';
+        const branch = $('cfg-branch').value.trim() || PADRAO.branch;
+        const alvo = 'https://api.github.com/repos/' + owner + '/' + repo;
+        const cabeca = {
+          Authorization: 'Bearer ' + token,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28'
+        };
         try {
-          const resposta = await fetch('https://api.github.com/repos/' + owner + '/' + repo, {
-            headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' },
-            cache: 'no-store'
+          const leitura = await fetch(alvo + '/contents/' + ARQUIVOS[0] + '?ref=' + encodeURIComponent(branch),
+            { headers: cabeca, cache: 'no-store' });
+          if (!leitura.ok) {
+            aviso.style.color = 'var(--erro)';
+            aviso.textContent = leitura.status === 404
+              ? 'não achei ' + ARQUIVOS[0] + ' na branch ' + branch + ' de ' + owner + '/' + repo
+              : 'o token não consegue ler ' + owner + '/' + repo + ': ' + await motivo(leitura);
+            return;
+          }
+
+          // Sonda de escrita sem gravar nada: manda um sha impossível de propósito.
+          // Sem permissão o GitHub barra antes (403); com permissão ele chega a conferir
+          // o sha e recusa por conflito (409) — nada é alterado nos dois casos.
+          const sonda = await fetch(alvo + '/contents/' + ARQUIVOS[0], {
+            method: 'PUT',
+            headers: Object.assign({ 'Content-Type': 'application/json' }, cabeca),
+            body: JSON.stringify({
+              message: 'teste de permissão',
+              content: paraBase64('teste'),
+              sha: '0'.repeat(40),
+              branch: branch
+            })
           });
-          if (!resposta.ok) throw new Error(String(await motivo(resposta)));
-          const dados = await resposta.json();
-          const podeGravar = dados.permissions && dados.permissions.push;
-          aviso.style.color = podeGravar ? 'var(--ok)' : 'var(--aviso)';
-          aviso.textContent = podeGravar
-            ? 'conexão certa: dá para publicar em ' + dados.full_name
-            : 'conectou em ' + dados.full_name + ', mas o token não tem permissão de escrita';
+
+          if (sonda.status === 409 || sonda.status === 422) {
+            aviso.style.color = 'var(--ok)';
+            aviso.textContent = 'tudo certo: o token lê e grava em ' + owner + '/' + repo + ' (' + branch + ')';
+          } else if (sonda.status === 403) {
+            aviso.style.color = 'var(--erro)';
+            aviso.textContent = SEM_ESCRITA;
+          } else if (sonda.ok) {
+            aviso.style.color = 'var(--aviso)';
+            aviso.textContent = 'o token grava, mas o teste mexeu no arquivo — confira o repositório';
+          } else {
+            aviso.style.color = 'var(--aviso)';
+            aviso.textContent = 'o token lê, mas não deu para confirmar a escrita (' +
+              sonda.status + ': ' + await motivo(sonda) + ') — só o Publicar tira a dúvida';
+          }
         } catch (erro) {
           aviso.style.color = 'var(--erro)';
           aviso.textContent = 'falhou: ' + erro.message;
