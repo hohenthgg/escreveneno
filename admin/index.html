@@ -226,18 +226,21 @@
 
     .campos {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 190px 160px;
+      grid-template-columns: minmax(0, 1fr) 170px;
       gap: 12px;
-      margin-bottom: 4px;
+      margin-bottom: 0;
     }
 
+    .campos label { margin-bottom: 4px; }
+
     #campo-titulo {
-      border: 0;
-      border-radius: 0;
-      border-bottom: 1px solid var(--line);
-      background: none;
-      padding: 6px 0;
-      font: 700 24px/1.25 var(--serif);
+      padding: 11px 13px;
+      font: 700 21px/1.3 var(--serif);
+    }
+
+    #campo-titulo::placeholder {
+      color: var(--muted);
+      font: 400 16px/1.4 var(--ui);
     }
 
     .link-texto {
@@ -338,18 +341,6 @@
     .dupla { display: flex; gap: 10px; }
     .dupla > * { flex: 1 1 0; min-width: 0; }
 
-    .cats { margin: 0 0 14px; padding: 0; list-style: none; }
-
-    .cats li {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      margin-bottom: 7px;
-    }
-
-    .cats input { flex: 1 1 auto; }
-    .cats button { min-width: 34px; padding: 7px 9px; }
-
     /* ---------- estreito ---------- */
 
     @media (max-width: 860px) {
@@ -403,7 +394,6 @@
       <aside class="textos">
         <div class="cabeca">
           <button id="novo" type="button">+ Novo texto</button>
-          <button id="cats-abrir" type="button">Categorias</button>
         </div>
         <input id="filtro-lista" type="search" placeholder="Filtrar textos" aria-label="Filtrar textos">
         <ol class="itens" id="itens"></ol>
@@ -414,9 +404,8 @@
         <button id="voltar-lista" type="button">← textos</button>
 
         <div class="campos">
-          <input id="campo-titulo" placeholder="Título do texto" aria-label="Título do texto">
-          <label for="campo-categoria">Categoria
-            <select id="campo-categoria"></select>
+          <label for="campo-titulo">Título do texto
+            <input id="campo-titulo" placeholder="Escreva aqui o nome do texto">
           </label>
           <label for="campo-data">Data
             <input id="campo-data" type="date">
@@ -478,22 +467,6 @@
     </form>
   </dialog>
 
-  <dialog id="cats">
-    <form method="dialog" id="form-cats">
-      <h2>Categorias</h2>
-      <p class="dica">As abas do site saem daqui. Renomear atualiza os textos que usam a categoria.</p>
-      <ol class="cats" id="cats-lista"></ol>
-      <div class="dupla">
-        <input id="cat-nova" placeholder="Nova categoria" aria-label="Nova categoria">
-        <button type="button" id="cat-add" style="flex:0 0 auto">Adicionar</button>
-      </div>
-      <p class="erro" id="erro-cats" role="status"></p>
-      <div class="acoes">
-        <button type="submit" class="primary">Fechar</button>
-      </div>
-    </form>
-  </dialog>
-
   <script>
     (() => {
       const USUARIO = 'euai';
@@ -519,7 +492,7 @@
       let cfg = Object.assign({}, PADRAO);
       try { Object.assign(cfg, JSON.parse(guarda.ler(CHAVE_CFG) || '{}')); } catch {}
 
-      let dados = null;        // { site, categorias, textos }
+      let dados = null;        // { site, textos }
       let publicado = null;    // JSON como está no ar
       let idsNoAr = new Set(); // textos que já têm link publicado
       let atual = null;        // id aberto
@@ -553,9 +526,8 @@
 
       const serializar = (d) => JSON.stringify({
         site: { titulo: d.site.titulo || '', descricao: d.site.descricao || '' },
-        categorias: d.categorias.slice(),
         textos: d.textos.map((t) => ({
-          id: t.id, titulo: t.titulo, categoria: t.categoria, data: t.data, html: t.html
+          id: t.id, titulo: t.titulo, data: t.data, html: t.html
         }))
       }, null, 2) + '\n';
 
@@ -620,7 +592,7 @@
         const filtro = $('filtro-lista').value.trim().toLowerCase();
         const ordem = dados.textos.slice().sort((a, b) => String(b.data).localeCompare(String(a.data)));
         const visiveis = ordem.filter((t) => !filtro ||
-          (t.titulo + ' ' + t.categoria).toLowerCase().includes(filtro));
+          (t.titulo || '').toLowerCase().includes(filtro));
 
         $('itens').innerHTML = '';
         visiveis.forEach((t) => {
@@ -630,7 +602,7 @@
           botao.setAttribute('aria-current', String(t.id === atual));
           botao.innerHTML = '<span class="t"></span><span class="c"></span>';
           botao.querySelector('.t').textContent = t.titulo || 'Sem título';
-          botao.querySelector('.c').textContent = [t.categoria, t.data].filter(Boolean).join(' · ');
+          botao.querySelector('.c').textContent = t.data || '';
           botao.addEventListener('click', () => abrir(t.id));
           li.appendChild(botao);
           $('itens').appendChild(li);
@@ -642,17 +614,6 @@
       // ---------- editor ----------
 
       const textoAtual = () => dados.textos.find((t) => t.id === atual) || null;
-
-      const encherCategorias = () => {
-        const sel = $('campo-categoria');
-        sel.innerHTML = '';
-        dados.categorias.forEach((cat) => {
-          const op = document.createElement('option');
-          op.value = cat;
-          op.textContent = cat;
-          sel.appendChild(op);
-        });
-      };
 
       const mostrarLink = (t) => {
         $('link-texto').textContent = 'link: #/t/' + t.id +
@@ -667,8 +628,6 @@
         $('editor').hidden = false;
         $('sem-selecao').hidden = true;
         $('campo-titulo').value = t.titulo;
-        encherCategorias();
-        $('campo-categoria').value = t.categoria;
         $('campo-data').value = t.data;
         corpo.innerHTML = t.html || '<p></p>';
         mostrarLink(t);
@@ -700,14 +659,6 @@
         agendar();
       });
 
-      $('campo-categoria').addEventListener('change', () => {
-        const t = textoAtual();
-        if (!t) return;
-        t.categoria = $('campo-categoria').value;
-        desenharLista();
-        agendar();
-      });
-
       $('campo-data').addEventListener('change', () => {
         const t = textoAtual();
         if (!t) return;
@@ -734,11 +685,9 @@
       $('filtro-lista').addEventListener('input', desenharLista);
 
       $('novo').addEventListener('click', () => {
-        if (!dados.categorias.length) dados.categorias.push('Textos');
         const t = {
           id: idUnico('sem-titulo'),
           titulo: '',
-          categoria: dados.categorias[0],
           data: hoje(),
           html: '<p></p>'
         };
@@ -833,97 +782,6 @@
         if (!$('app').hidden && sujo()) { e.preventDefault(); e.returnValue = ''; }
       });
 
-      // ---------- categorias ----------
-
-      const desenharCats = () => {
-        const lista = $('cats-lista');
-        lista.innerHTML = '';
-        dados.categorias.forEach((cat, i) => {
-          const li = document.createElement('li');
-
-          const campo = document.createElement('input');
-          campo.value = cat;
-          campo.setAttribute('aria-label', 'Nome da categoria');
-          campo.addEventListener('change', () => {
-            const novo = campo.value.trim();
-            if (!novo) { campo.value = cat; return; }
-            if (dados.categorias.some((c, j) => c === novo && j !== i)) {
-              $('erro-cats').textContent = 'Já existe uma categoria com esse nome.';
-              campo.value = cat;
-              return;
-            }
-            dados.textos.forEach((t) => { if (t.categoria === cat) t.categoria = novo; });
-            dados.categorias[i] = novo;
-            $('erro-cats').textContent = '';
-            depoisDeMexerNasCats();
-          });
-
-          const sobe = document.createElement('button');
-          sobe.type = 'button'; sobe.textContent = '↑'; sobe.title = 'Subir';
-          sobe.disabled = i === 0;
-          sobe.addEventListener('click', () => {
-            dados.categorias.splice(i - 1, 0, dados.categorias.splice(i, 1)[0]);
-            depoisDeMexerNasCats();
-          });
-
-          const desce = document.createElement('button');
-          desce.type = 'button'; desce.textContent = '↓'; desce.title = 'Descer';
-          desce.disabled = i === dados.categorias.length - 1;
-          desce.addEventListener('click', () => {
-            dados.categorias.splice(i + 1, 0, dados.categorias.splice(i, 1)[0]);
-            depoisDeMexerNasCats();
-          });
-
-          const tira = document.createElement('button');
-          tira.type = 'button'; tira.textContent = '✕'; tira.title = 'Excluir';
-          tira.className = 'risco';
-          tira.addEventListener('click', () => {
-            const emUso = dados.textos.filter((t) => t.categoria === cat).length;
-            if (emUso) {
-              $('erro-cats').textContent = 'Essa categoria tem ' + emUso +
-                (emUso > 1 ? ' textos' : ' texto') + '. Mova-os antes de excluir.';
-              return;
-            }
-            dados.categorias.splice(i, 1);
-            $('erro-cats').textContent = '';
-            depoisDeMexerNasCats();
-          });
-
-          li.append(campo, sobe, desce, tira);
-          lista.appendChild(li);
-        });
-      };
-
-      const depoisDeMexerNasCats = () => {
-        desenharCats();
-        if (atual) {
-          encherCategorias();
-          const t = textoAtual();
-          if (t) $('campo-categoria').value = t.categoria;
-        }
-        desenharLista();
-        salvarRascunho();
-      };
-
-      $('cat-add').addEventListener('click', () => {
-        const nome = $('cat-nova').value.trim();
-        if (!nome) return;
-        if (dados.categorias.includes(nome)) {
-          $('erro-cats').textContent = 'Essa categoria já existe.';
-          return;
-        }
-        dados.categorias.push(nome);
-        $('cat-nova').value = '';
-        $('erro-cats').textContent = '';
-        depoisDeMexerNasCats();
-      });
-
-      $('cats-abrir').addEventListener('click', () => {
-        $('erro-cats').textContent = '';
-        desenharCats();
-        $('cats').showModal();
-      });
-
       // ---------- carregar ----------
 
       const enderecoDoArquivo = () =>
@@ -942,7 +800,6 @@
 
       const normalizar = (bruto) => ({
         site: Object.assign({ titulo: 'escreveneno', descricao: '' }, bruto.site || {}),
-        categorias: Array.isArray(bruto.categorias) && bruto.categorias.length ? bruto.categorias : ['Textos'],
         textos: Array.isArray(bruto.textos) ? bruto.textos : []
       });
 

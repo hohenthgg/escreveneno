@@ -146,32 +146,6 @@
       border-bottom: 1px solid var(--line);
     }
 
-    .abas {
-      display: flex;
-      flex: 1 1 auto;
-      flex-wrap: wrap;
-      gap: 7px;
-    }
-
-    .abas button {
-      min-height: 34px;
-      padding: 6px 13px;
-      font: 600 13px/1 var(--ui);
-      letter-spacing: .02em;
-    }
-
-    .abas button[aria-pressed="true"] {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: var(--paper);
-    }
-
-    .abas .conta {
-      margin-left: 6px;
-      opacity: .6;
-      font-variant-numeric: tabular-nums;
-    }
-
     #busca {
       flex: 0 1 190px;
       min-width: 130px;
@@ -208,8 +182,6 @@
       letter-spacing: .1em;
       text-transform: uppercase;
     }
-
-    .kicker .cat { color: var(--accent); }
 
     .entradas h2 {
       margin: 0 0 8px;
@@ -327,7 +299,6 @@
         <p id="site-descricao" hidden></p>
       </div>
       <div class="filtros">
-        <nav class="abas" id="abas" aria-label="Categorias"></nav>
         <input id="busca" type="search" placeholder="Buscar nos textos" aria-label="Buscar nos textos">
       </div>
       <ol class="entradas" id="entradas"></ol>
@@ -388,7 +359,6 @@
       // ---------- dados ----------
 
       let dados = null;
-      let categoriaAtiva = 'todos';
 
       const semTags = (html) => {
         const caixa = document.createElement('div');
@@ -418,41 +388,10 @@
 
       // ---------- lista ----------
 
-      const desenharAbas = () => {
-        const usadas = dados.categorias.filter((cat) => dados.textos.some((t) => t.categoria === cat));
-        const todas = [['todos', 'Tudo', dados.textos.length]].concat(
-          usadas.map((cat) => [cat, cat, dados.textos.filter((t) => t.categoria === cat).length]));
-
-        $('abas').innerHTML = '';
-        // uma categoria só não merece abas — e some do fluxo para a busca não ficar solta
-        $('abas').hidden = usadas.length < 2;
-        if (usadas.length < 2) return;
-
-        todas.forEach(([chave, rotulo, quantos]) => {
-          const botao = document.createElement('button');
-          botao.type = 'button';
-          botao.textContent = rotulo;
-          botao.setAttribute('aria-pressed', String(chave === categoriaAtiva));
-          const conta = document.createElement('span');
-          conta.className = 'conta';
-          conta.textContent = quantos;
-          botao.appendChild(conta);
-          botao.addEventListener('click', () => {
-            categoriaAtiva = chave;
-            desenharAbas();
-            desenharEntradas();
-          });
-          $('abas').appendChild(botao);
-        });
-      };
-
       const desenharEntradas = () => {
         const busca = $('busca').value.trim().toLowerCase();
-        const visiveis = ordenados().filter((t) => {
-          if (categoriaAtiva !== 'todos' && t.categoria !== categoriaAtiva) return false;
-          if (!busca) return true;
-          return (t.titulo + ' ' + semTags(t.html)).toLowerCase().includes(busca);
-        });
+        const visiveis = ordenados().filter((t) => !busca ||
+          (t.titulo + ' ' + semTags(t.html)).toLowerCase().includes(busca));
 
         $('entradas').innerHTML = '';
         visiveis.forEach((t) => {
@@ -462,11 +401,8 @@
 
           const meta = document.createElement('p');
           meta.className = 'kicker';
-          const partes = [];
-          if (t.categoria) partes.push('<span class="cat">' + escapar(t.categoria) + '</span>');
-          if (dataBonita(t.data)) partes.push(escapar(dataBonita(t.data)));
-          partes.push(minutos(t.html) + ' min de leitura');
-          meta.innerHTML = partes.join(' · ');
+          meta.textContent = [dataBonita(t.data), minutos(t.html) + ' min de leitura']
+            .filter(Boolean).join(' · ');
 
           const titulo = document.createElement('h2');
           titulo.textContent = t.titulo;
@@ -498,7 +434,6 @@
         document.title = dados.site.titulo || 'escreveneno';
         $('texto').hidden = true;
         $('lista').hidden = false;
-        desenharAbas();
         desenharEntradas();
         progresso();
       };
@@ -508,11 +443,8 @@
         if (!t) { location.hash = '#/'; return; }
 
         document.title = t.titulo + ' — ' + (dados.site.titulo || 'escreveneno');
-        const partes = [];
-        if (t.categoria) partes.push('<span class="cat">' + escapar(t.categoria) + '</span>');
-        if (dataBonita(t.data)) partes.push(escapar(dataBonita(t.data)));
-        partes.push(minutos(t.html) + ' min de leitura');
-        $('meta').innerHTML = partes.join(' · ');
+        $('meta').textContent = [dataBonita(t.data), minutos(t.html) + ' min de leitura']
+          .filter(Boolean).join(' · ');
         $('titulo').textContent = t.titulo;
         $('corpo').innerHTML = t.html;
         $('lista').hidden = true;
@@ -540,7 +472,6 @@
         .then((conteudo) => {
           dados = conteudo;
           dados.site = dados.site || {};
-          dados.categorias = dados.categorias || [];
           dados.textos = dados.textos || [];
 
           const nome = dados.site.titulo || 'escreveneno';
