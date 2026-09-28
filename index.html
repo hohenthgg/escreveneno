@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#f4efe6">
-  <title>Texto unificado</title>
+  <title>escreveneno</title>
   <style>
     :root {
       --bg: #f4efe6;
@@ -15,100 +15,8 @@
       --line: rgba(37, 34, 30, .14);
       --accent: #7b4b32;
       --font-size: 19px;
-    }
-
-    * { box-sizing: border-box; }
-
-    html {
-      scroll-behavior: smooth;
-      -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: var(--font-size);
-      line-height: 1.78;
-      text-rendering: optimizeLegibility;
-      transition: background .2s ease, color .2s ease;
-    }
-
-    .progress {
-      position: fixed;
-      inset: 0 0 auto;
-      z-index: 20;
-      height: 3px;
-      background: transparent;
-    }
-
-    .progress > span {
-      display: block;
-      width: 0;
-      height: 100%;
-      background: var(--accent);
-    }
-
-    .toolbar {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      padding: max(12px, env(safe-area-inset-top)) 14px 10px;
-      background: rgba(244, 239, 230, .94);
-      background: color-mix(in srgb, var(--bg) 88%, transparent);
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-    button {
-      min-width: 44px;
-      min-height: 42px;
-      padding: 7px 12px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: var(--paper);
-      color: var(--text);
-      font: 600 15px/1 system-ui, sans-serif;
-      touch-action: manipulation;
-    }
-
-    button:active { transform: scale(.97); }
-
-    main {
-      width: min(100%, 760px);
-      margin: 0 auto;
-      padding: clamp(30px, 7vw, 68px) clamp(22px, 6vw, 72px) max(72px, env(safe-area-inset-bottom));
-      background: var(--paper);
-      min-height: calc(100vh - 65px);
-      box-shadow: 0 0 40px rgba(45, 36, 28, .06);
-    }
-
-    article { hyphens: none; }
-
-    p {
-      margin: 0 0 1.45em;
-      overflow-wrap: break-word;
-    }
-
-    h2 {
-      margin: 3em 0 1.35em;
-      padding-top: 1.1em;
-      border-top: 1px solid var(--line);
-      color: var(--accent);
-      font: 700 .77em/1.35 system-ui, sans-serif;
-      letter-spacing: .115em;
-    }
-
-    h2:first-child {
-      margin-top: 0;
-      padding-top: 0;
-      border-top: 0;
+      --ui: system-ui, -apple-system, "Segoe UI", sans-serif;
+      --serif: Georgia, "Times New Roman", serif;
     }
 
     body.dark {
@@ -120,15 +28,270 @@
       --accent: #d18a62;
     }
 
-    body.dark .toolbar { background: rgba(21, 20, 18, .94); }
+    * { box-sizing: border-box; }
+
+    [hidden] { display: none !important; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--serif);
+      line-height: 1.7;
+      text-rendering: optimizeLegibility;
+      transition: background .2s ease, color .2s ease;
+    }
+
+    .progresso {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 20;
+      height: 3px;
+      background: transparent;
+    }
+
+    .progresso > span {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+    }
+
+    /* ---------- topo ---------- */
+
+    .topo {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: max(11px, env(safe-area-inset-top)) clamp(16px, 4vw, 30px) 11px;
+      background: rgba(244, 239, 230, .94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
     @supports (background: color-mix(in srgb, black 50%, transparent)) {
-      body.dark .toolbar { background: color-mix(in srgb, var(--bg) 88%, transparent); }
+      .topo { background: color-mix(in srgb, var(--bg) 88%, transparent); }
+    }
+
+    .marca {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      color: var(--text);
+      font: 700 16px/1.2 var(--serif);
+      letter-spacing: .01em;
+      text-decoration: none;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .controles { display: flex; gap: 7px; }
+
+    button {
+      min-width: 40px;
+      min-height: 38px;
+      padding: 6px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--text);
+      font: 600 14px/1 var(--ui);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    button:hover { border-color: var(--accent); }
+    button:active { transform: scale(.97); }
+
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ---------- lista ---------- */
+
+    main {
+      width: min(100%, 760px);
+      margin: 0 auto;
+      padding: clamp(28px, 6vw, 60px) clamp(20px, 5vw, 40px) max(80px, env(safe-area-inset-bottom));
+    }
+
+    .capa { margin-bottom: clamp(28px, 5vw, 44px); }
+
+    .capa h1 {
+      margin: 0;
+      font: 700 clamp(30px, 7vw, 44px)/1.15 var(--serif);
+      letter-spacing: -.015em;
+    }
+
+    .capa p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .filtros {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .abas {
+      display: flex;
+      flex: 1 1 auto;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .abas button {
+      min-height: 34px;
+      padding: 6px 13px;
+      font: 600 13px/1 var(--ui);
+      letter-spacing: .02em;
+    }
+
+    .abas button[aria-pressed="true"] {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--paper);
+    }
+
+    .abas .conta {
+      margin-left: 6px;
+      opacity: .6;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #busca {
+      flex: 0 1 190px;
+      min-width: 130px;
+      min-height: 34px;
+      padding: 7px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--text);
+      font: 14px/1.3 var(--ui);
+    }
+
+    .entradas {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .entradas li { border-bottom: 1px solid var(--line); }
+
+    .entradas a {
+      display: block;
+      padding: clamp(22px, 4vw, 30px) 0;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .entradas a:hover h2 { color: var(--accent); }
+
+    .kicker {
+      margin: 0 0 9px;
+      color: var(--muted);
+      font: 600 11.5px/1.4 var(--ui);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .kicker .cat { color: var(--accent); }
+
+    .entradas h2 {
+      margin: 0 0 8px;
+      font: 700 clamp(21px, 4vw, 26px)/1.25 var(--serif);
+      letter-spacing: -.01em;
+      transition: color .15s ease;
+    }
+
+    .resumo {
+      margin: 0;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 16.5px;
+      line-height: 1.6;
+    }
+
+    .vazio {
+      padding: 50px 0;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ---------- leitura ---------- */
+
+    .voltar {
+      display: inline-block;
+      color: var(--muted);
+      font: 600 13px/1 var(--ui);
+      text-decoration: none;
+    }
+
+    .voltar:hover { color: var(--accent); }
+    .voltar.rodape { margin-top: 56px; }
+
+    #texto h1 {
+      margin: 8px 0 26px;
+      font: 700 clamp(27px, 6vw, 38px)/1.2 var(--serif);
+      letter-spacing: -.015em;
+    }
+
+    #texto .kicker { margin-top: 22px; }
+
+    #corpo {
+      font-size: var(--font-size);
+      line-height: 1.78;
+      hyphens: none;
+    }
+
+    #corpo p {
+      margin: 0 0 1.45em;
+      overflow-wrap: break-word;
+    }
+
+    #corpo h2 {
+      margin: 3em 0 1.35em;
+      padding-top: 1.1em;
+      border-top: 1px solid var(--line);
+      color: var(--accent);
+      font: 700 .77em/1.35 var(--ui);
+      letter-spacing: .115em;
+    }
+
+    #corpo > :first-child {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    #corpo a { color: var(--accent); }
+
+    #aviso {
+      padding: 60px 0;
+      color: var(--muted);
+      text-align: center;
     }
 
     @media (max-width: 600px) {
-      body { line-height: 1.72; }
-      main { box-shadow: none; }
-      h2 { margin-top: 2.2em; }
+      #corpo { line-height: 1.72; }
+      #corpo h2 { margin-top: 2.2em; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -137,77 +300,262 @@
     }
 
     @media print {
-      .toolbar, .progress { display: none; }
-      body, main { background: white; color: black; box-shadow: none; }
+      .topo, .progresso, .voltar, .filtros { display: none; }
+      body { background: white; color: black; }
       main { width: 100%; padding: 0; }
     }
   </style>
 </head>
 <body>
-  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
-  <nav class="toolbar" aria-label="Opções de leitura">
-    <button id="smaller" type="button" aria-label="Diminuir o texto">A−</button>
-    <button id="larger" type="button" aria-label="Aumentar o texto">A+</button>
-    <button id="theme" type="button" aria-label="Alternar modo claro e escuro">◐</button>
-  </nav>
+  <div class="progresso" aria-hidden="true"><span id="barra"></span></div>
+
+  <header class="topo">
+    <a class="marca" href="#/" id="marca">escreveneno</a>
+    <div class="controles">
+      <button id="menor" type="button" aria-label="Diminuir o texto">A−</button>
+      <button id="maior" type="button" aria-label="Aumentar o texto">A+</button>
+      <button id="tema" type="button" aria-label="Alternar modo claro e escuro">◐</button>
+    </div>
+  </header>
+
   <main>
-    <article id="textContent">
-<h2 class="day-heading">SEXTA-FEIRA</h2>
-<p>Sexta-feira. É de manhã, trabalho normalmente — e nesse normalmente, entenda-se: ansiosamente, querendo finalizar o trabalho de uma vida em poucos cliques. De tarde, então, a Lauane, ansiosa pelo feriado, comemorava. Quase louvando. Tecendo louvores em risos ao ócio que teria. Já desapegada, despojada, nua, como se, ao descer do carro, retirasse toda a roupagem do ordinário e estivesse num estado extático de pré arrebatamento. Eu, formal como sempre fui, muito bem vestido ainda de trabalho, estava fervendo. Esse calor todo me tornava um. Sem divisões. Essa roupagem não saía. Toda sexta-feira me questionava por que razão, no dia tão esperado, não queria eu parar. Movido pela inércia, talvez. Muito fixo. Permaneci fixo, na verdade: trabalhei, chegando em casa, até a madrugada. Ansioso para que após uns cliques, eu finalizasse toda a minha obra. Perdi a força e adormeci por metade de um dia.</p>
-<h2 class="day-heading">SÁBADO</h2>
-<p>Sábado, então. Acordo, vejo a ilusão engraçada que é. Não é como se eu não fosse consciente disso. Mas o tom dos dias estavam sombrios. Olho mensagens estranhas, de pessoas que nem sempre me foram estranhas. Mas não me incomodo. A estranheza combinava com o clima, e, honestamente, precisava aumentar a intensidade da estranheza para escapar dessa atmosfera sufocante. Eu estava a alguns metros para baixo da terra, o ar ali era só um boato ou uma lenda; murmúrios que vinham de cima, do mundo dos vivos. Faço minhas coisas — ao menos tento, e penso perplexo apenas em que, na verdade, mesmo após o sono, eu estava completamente vestido como no dia anterior. Tudo se sucede como se fosse outra sexta-feira, exceptuando pelo fato de que, claro, isso ocorria apenas nos meus pensamentos. Olhando retroativamente, minhas lembranças desse dia se encerram no momento em que eu constato que estava acordando completamente vestido. Trabalho de novo.</p>
-<h2 class="day-heading">DOMINGO DE MANHÃ</h2>
-<p>A passagem foi longa. Estava tentando me desligar. Uma peregrinação onde, de vagueio em vagueio, eventualmente você encontra alguma parada. O deserto era longo, na verdade, infinito. Estava com sede. Mas sabia que, na insistência perante o infinito, podia eu incomodá-lo. O segredo é continuar, e enrijecer. Aquilo que você persegue acaba fugindo de você — é sempre assim. Então, enrijeço, pois, de tão rígido, inflexível, torno a me transmutar numa rocha. Quem esconderia algo de uma mera rocha, imóvel e impenetrável? Procurava um posto, um local, um sinal que seja de alguém. Esse alguém não é ninguém mais senão eu mesmo. É que nesse meio tempo houve aquela cisão. Aquele afastamento de si que você faz em troca de uma aproximação de outra coisa. Tudo isso mais ou menos forçado, mais ou menos natural. Disso é que tratava esses dias, esses tempos. Eu dormia tentando me desligar, e logo pela manhã de um domingo, se apresentava ainda diante de mim como imperativo todo esse esforço... para dormir. Apenas dormir. Desligar. Ceder. Talvez, para isso, o enrijecimento não fosse o caminho. Isso foi domingo cedo, logo pela manhã, e daqueles domingos com o clima nublado, meio indefinido, umas potencialidades que não sabemos bem o que pode ser. Era essa a atmosfera. Subitamente, claro, interrompi essa luta. Levantei e coloquei o gato na sala. Que barulheira, bicho.</p>
-<p>O gato — Panda, seu nome —, era uma gatinha... adotada pelo meu irmão. Gato estranho, sinceramente. O motivo do nome era evidente: ela usava maquiagem nos olhos, pois queria ela ser como aqueles que comem bambu nas ásias e vivem a vida mansa. Era, na verdade, muito dócil, de corpo mole, muito mole. E essa mesma plasticidade refletia não só no seu temperamento, mas mais como que a própria Lua em modo felino, astro vagante e sem luz própria, funcionava ela, lembrando aqui, de receptáculo de qualquer raio de luz que vem de onde quer que seja... Esse gato, digo, era algo à parte, à função das luzes do acaso. Esses comentários, aliás, sequer são propriedade minha; na verdade, é de senso comum entre os meus. A Lua, afinal, concede às suas ninhadas talentos, dons, habilidades. Uns tornam médiuns, uns videntes, outros feitiçeiros com dons de teriantropia. Esse gato era tudo isso. Não sei. Guardo com certo carinho esses traços. Costumava dizer que era uma espécie de receptáculo... um receptáculo para qualquer coisa que a tomasse — em tom jocoso, claro, mas parecia mesmo. Gato de lua. E, como tal, não poderia ser diferente: reparou já que o andar dela segue, ciclicamente, uma perseguição ao astro rei? Ora, a Panda caçava ciclicamente seu dono. Como que, de lua nova em lua nova, suas energias fossem renovadas, e ela pudesse então reiniciar sua missão. Isso era o dia todo, a cada separação entre os dois, era um calendário lunar. Seu dono, figura apolínea, era perseguido por ela.</p>
-<p>Coloquei ela na sala, ela estava tentando abrir a porta do banheiro para ir atrás dele; interrompi o processo de lua nova. Que barulheira, bicho.</p>
-<p>Voltei ao leito, ainda não havia findado a luta entre eu e meu descanso. Claro, e ela, presa na sala, parou de miar. Horas depois, meu irmão e meus pais começam a chamá-la pelo quintal a fora. O medo, na verdade, é que, por ela ser relativamente mal acostumada com esse ambiente, e plástica, molenga, suscetível e receptiva até demais, não sabia ainda discernir os perigos da vizinhança. São muitos cachorros, e somos cercados por todo tipo de bestialidade. Dias antes, sua irmã de mesma idade, sofreu desse mal. Eu não vi, não estava aqui. Desde então, porém, a atmosfera instalada era fúnebre. O quintal, a casa, as árvores e as flores se pintaram todos do cinza mais escuro, e os rostos se distorceram em peso derretido e depressão. E eles a chamavam demais... durante esses 10 ou 15 minutos. Eu, exausto de lutar pelo meu descanso, decido sair. Saí sem intermédio: sem roupa, quase. Sem chinelo, pé no chão, olhos semi abertos, desejando que, o que quer que estivesse acontecendo, fosse silenciado. Que barulheira, bicho.</p>
-<p>Desço ao quintal. Todos a chamando, todos muito preocupados, claro. Começo a ouvir. Fico atento. Todos ouvem.</p>
-<p>O cachorro do vizinho late e começa uns grunhidos, uns rosnados, uns gritos. Mas o muro é alto. Subo no poço, tento olhar por cima o quintal do vizinho. Meu irmão corre instantaneamente para a rua para ver pelo lado mais baixo — porque, de onde eu estava, podíamos apenas ver a mata que crescera tanta nessa chuvarada. Não havia nem sinal de movimento. Apenas uns sons que estavam vindo em direção a rua... Meus olhos não viam nada, eu não enxergava nada, mas o sangue já estava férvido. Mas eu também não cometeria o ato de insanidade de pular o muro — que, vale dizer, tem uns 3 ou 4 metros. Na verdade, eu já estava em cima do muro louco para pular, já havia escalado, o sangue estava quente; esperava apenas o sinal de meu irmão, a confirmação de que algo estava acontecendo. Estava ali, pronto para pular do outro lado. Pensei: são apenas cachorros, consigo ser mais rápido, consigo desarmá-los. São só uns cachorros e outros bichos. Os cachorros ali eram dois: um Fila, enorme, cavalo, imenso. Já matou uns 3 ou 4 gatos daqui. Parecia um bezerro. O outro era um, sei lá, um vira-lata qualquer cheio de ódio. Eu ia pular, estava em cima do puro, tinha uns 3 metros pra mais. Estava atento pela confirmação do meu irmão, já em cima do muro. Os meus, ao meu lado, em prantos já... e sequer tínhamos, a altura do momento, qualquer confirmação ou pista senão aqueles latidos, e os grunhidos... que sequer soavam como de algo reconhecível. Pensei... não é pra tanto, e o gato já sabe que ali tem cachorro, ora. E esses cachorros vivem latindo e brigando. Sejamos razoáveis — pensava sem pensar. Eu olhava a situação como que, de uma posição de cima, distante, mas ao mesmo tempo munido de facas e outras armas, que nada eram senão apenas loucura e cólera fervida, estava imerso, mais instalado do que qualquer outro no momento, e completamente pronto. Mas não conseguia enxergar nada mesmo acima de 5 ou 6 metros do chão. Nesses segundos, estava terminando de pensar isso, terminando de sentir a textura úmida do muro no meu joelho enquanto estava em cima desse concreto, até que meu irmão, a figura solar que a gatinha era tão vinculada e perseguia tanto, subitamente aparece sentado chorando em gritos infernais de dores inconcebíveis ao nosso lado. Ele apenas aparece, de repente. Ninguém viu ele chegando, e chegando assim... no estado como chegou.</p>
-<p>É o que é... Foi o que foi. Já não havia mais ação a ser tomada, senão aquelas lá, das mais saturninas. Eu, meio por fora dessa esfera imediata, termino de sentir a textura do concreto. Ouço ele mais atentamente. Em prantos aqui todos caíram. Uns mais que outros. Outros, mais catatônicos, sem reação... Coisa de segundos. Eu, tomado pela fervura do sangue, voei sozinho no vizinho. Constatei, porque não acreditava. Nunca acredito em nada.</p>
-<p>Então, de fato, vi: não havia salvação... quem sabe para seu intestino, exposto, quem sabe. Quem sabe a ele eu pudesse colocá-lo de volta e devolvê-lo ao seu lugar. Porque ela, a gatinha, já não podia mais retornar para onde pertencia. Foi hora de transferir seu corpo para seu novo lar. Ao meu redor, os meus têm dificuldades com esses temas sepulcrais, esse clima lutuoso, funéreo. Então rasguei uma cortina e fui lá buscá-la... seu corpo, ainda quente, e rígido, bem rígido. Não poderia deixá-la apodrecer a céu aberto e num lugar tão terrível, descartada e abandonada assim. Embrulhei como pude, na forma que pude. Pelo portão, cruzei com a dona do cachorro — ela, com aquela expressão de horror e sem-graceza, pede desculpas —, então, olho em seus olhos.</p>
-<p>Caminhando, não... peregrinando, de novo, pelo deserto, mas agora não pelo meu descanso. E em pleno domingo esfumaçado e confuso, ouvia eu — enquanto carregava uma gatinha inocente, motivo de um amor super abundante — risos, conversas, e todo tipo de interação humana nos bares, nas conveniências, pelos carros e toda a movimentação do percurso pelas ruas de um domingo pré-feriado, com o mundo inteiro simplesmente avançando naturalmente durante e no mesmo intervalo de tempo em que, carregava eu, a morte embrulhada nos meus braços. O retrato da realidade é um só. O silêncio, de novo, foi instaurado. Que silêncio, bicho.</p>
-<h2 class="day-heading">DOMINGO À NOITE E SEGUNDA-FEIRA</h2>
-<p>A chuva cai, mais à tarde, e com ela o sol vai se despedindo, descendo no horizonte. Um convite ao acaso, ao mistério, às forças noturnas. Ninguém tem controle sobre a noite. É chegada a hora de eu cumprir uma tarefa, finalmente. Daquelas estranhas que, certamente, me puxaria para cima da terra. Vou caminhando, mesmo na chuva, Sou tomado por memórias, sabores, texturas. Cheiros... e todo tipo de memórias de uma carne e um espírito. De repente, na verdade, tudo passa muito rápido, e nem vejo. Quando vejo, já estou me despedindo. Sequer conversei. Mas foi o suficiente. O retrato da realidade é um só. Nesse momento, percebi que, sinceramente, não foi suficiente. Precisava de um arrebatamento. Mas eu nem sabia onde eu estava — seria arrebatado de onde, para onde? Momentos depois, em lugar nenhum, percebi que não havia lugares que pudessem me oferecer coisa alguma. Coisa nenhuma cumpria os requisitos. Nesse momento, eu estava vestido pela metade. Quando me dei conta dessa meia roupagem, comecei a me reconhecer de novo. Numa narrativa, na verdade, em que me prendia a uma esfera cujo fim é o início; e iniciava-se pelo seu fim. Ali comecei a ter um vislumbre. O deserto era infinito, não linearmente, mas esfericamente. A experiência foi decantada, e no final de segunda-feira, me constatei nu, finalmente. Então reconhecia — no momento — que era eu mesmo; estava ali. A pele era minha, e não era outra coisa. Senti a minha textura, os meus traços, e eles eram meus, realmente meus. Aquelas roupas não me pertenciam, e sob meu corpo, tornavam-se meu corpo, e não mais separada e cobrindo ele, mas tomando seu lugar. Corrompendo minha autonomia e meu espírito. Num ato profético, chegara a hora: ergui um altar e queimei essa roupagem! Joguei fogo, atirei álcool, fiz tudo ser consumido, ser purificado, não deixei cinzas nem rastros. Faltava apenas queimar os navios — o alfaiate, entenda-se, donde vinha as roupagens.</p>
+    <p id="aviso">carregando…</p>
+
+    <section id="lista" hidden>
+      <div class="capa">
+        <h1 id="site-titulo"></h1>
+        <p id="site-descricao" hidden></p>
+      </div>
+      <div class="filtros">
+        <nav class="abas" id="abas" aria-label="Categorias"></nav>
+        <input id="busca" type="search" placeholder="Buscar nos textos" aria-label="Buscar nos textos">
+      </div>
+      <ol class="entradas" id="entradas"></ol>
+      <p class="vazio" id="vazio" hidden></p>
+    </section>
+
+    <article id="texto" hidden>
+      <a class="voltar" href="#/">← todos os textos</a>
+      <p class="kicker" id="meta"></p>
+      <h1 id="titulo"></h1>
+      <div id="corpo"></div>
+      <a class="voltar rodape" href="#/">← todos os textos</a>
     </article>
   </main>
+
   <script>
     (() => {
-      const root = document.documentElement;
-      const body = document.body;
-      const storage = {
-        get(key) { try { return localStorage.getItem(key); } catch { return null; } },
-        set(key, value) { try { localStorage.setItem(key, value); } catch {} }
-      };
-      const savedSize = Number(storage.get('reader-font-size'));
-      const savedTheme = storage.get('reader-theme');
-      const initialDark = savedTheme === 'dark' ||
-        (!savedTheme && matchMedia('(prefers-color-scheme: dark)').matches);
-
-      if (savedSize >= 16 && savedSize <= 28) root.style.setProperty('--font-size', savedSize + 'px');
-      if (initialDark) body.classList.add('dark');
-
-      const resize = (step) => {
-        const current = parseFloat(getComputedStyle(root).getPropertyValue('--font-size')) || 19;
-        const next = Math.min(28, Math.max(16, current + step));
-        root.style.setProperty('--font-size', next + 'px');
-        storage.set('reader-font-size', String(next));
+      const $ = (id) => document.getElementById(id);
+      const guarda = {
+        ler(chave) { try { return localStorage.getItem(chave); } catch { return null; } },
+        gravar(chave, valor) { try { localStorage.setItem(chave, valor); } catch {} }
       };
 
-      document.getElementById('smaller').addEventListener('click', () => resize(-1));
-      document.getElementById('larger').addEventListener('click', () => resize(1));
-      document.getElementById('theme').addEventListener('click', () => {
-        body.classList.toggle('dark');
-        storage.set('reader-theme', body.classList.contains('dark') ? 'dark' : 'light');
+      // ---------- preferências de leitura ----------
+
+      const raiz = document.documentElement;
+      const corpoDoc = document.body;
+      const tamanhoSalvo = Number(guarda.ler('reader-font-size'));
+      const temaSalvo = guarda.ler('reader-theme');
+
+      if (tamanhoSalvo >= 16 && tamanhoSalvo <= 28) raiz.style.setProperty('--font-size', tamanhoSalvo + 'px');
+      if (temaSalvo === 'dark' || (!temaSalvo && matchMedia('(prefers-color-scheme: dark)').matches)) {
+        corpoDoc.classList.add('dark');
+      }
+
+      const redimensionar = (passo) => {
+        const atual = parseFloat(getComputedStyle(raiz).getPropertyValue('--font-size')) || 19;
+        const novo = Math.min(28, Math.max(16, atual + passo));
+        raiz.style.setProperty('--font-size', novo + 'px');
+        guarda.gravar('reader-font-size', String(novo));
+      };
+
+      $('menor').addEventListener('click', () => redimensionar(-1));
+      $('maior').addEventListener('click', () => redimensionar(1));
+      $('tema').addEventListener('click', () => {
+        corpoDoc.classList.toggle('dark');
+        guarda.gravar('reader-theme', corpoDoc.classList.contains('dark') ? 'dark' : 'light');
       });
 
-      const updateProgress = () => {
-        const limit = document.documentElement.scrollHeight - innerHeight;
-        const percent = limit > 0 ? Math.min(100, Math.max(0, scrollY / limit * 100)) : 100;
-        document.getElementById('progressBar').style.width = percent + '%';
+      const progresso = () => {
+        const limite = raiz.scrollHeight - innerHeight;
+        const parte = limite > 0 ? Math.min(100, Math.max(0, scrollY / limite * 100)) : 0;
+        $('barra').style.width = ($('texto').hidden ? 0 : parte) + '%';
       };
-      addEventListener('scroll', updateProgress, { passive: true });
-      addEventListener('resize', updateProgress, { passive: true });
-      updateProgress();
+      addEventListener('scroll', progresso, { passive: true });
+      addEventListener('resize', progresso, { passive: true });
+
+      // ---------- dados ----------
+
+      let dados = null;
+      let categoriaAtiva = 'todos';
+
+      const semTags = (html) => {
+        const caixa = document.createElement('div');
+        caixa.innerHTML = html;
+        return (caixa.textContent || '').replace(/\s+/g, ' ').trim();
+      };
+
+      // o resumo ignora os títulos de seção: eles atrapalham a primeira frase
+      const resumir = (html, limite = 210) => {
+        const caixa = document.createElement('div');
+        caixa.innerHTML = html;
+        caixa.querySelectorAll('h1, h2, h3').forEach((h) => h.remove());
+        const texto = (caixa.textContent || '').replace(/\s+/g, ' ').trim();
+        return texto.length > limite ? texto.slice(0, limite).replace(/\s+\S*$/, '') + '…' : texto;
+      };
+
+      const minutos = (html) => Math.max(1, Math.round(semTags(html).split(/\s+/).length / 220));
+
+      const dataBonita = (iso) => {
+        const partes = String(iso || '').split('-');
+        if (partes.length !== 3) return '';
+        const data = new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]));
+        return isNaN(data) ? '' : data.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+      };
+
+      const ordenados = () => dados.textos.slice().sort((a, b) => String(b.data).localeCompare(String(a.data)));
+
+      // ---------- lista ----------
+
+      const desenharAbas = () => {
+        const usadas = dados.categorias.filter((cat) => dados.textos.some((t) => t.categoria === cat));
+        const todas = [['todos', 'Tudo', dados.textos.length]].concat(
+          usadas.map((cat) => [cat, cat, dados.textos.filter((t) => t.categoria === cat).length]));
+
+        $('abas').innerHTML = '';
+        // uma categoria só não merece abas — e some do fluxo para a busca não ficar solta
+        $('abas').hidden = usadas.length < 2;
+        if (usadas.length < 2) return;
+
+        todas.forEach(([chave, rotulo, quantos]) => {
+          const botao = document.createElement('button');
+          botao.type = 'button';
+          botao.textContent = rotulo;
+          botao.setAttribute('aria-pressed', String(chave === categoriaAtiva));
+          const conta = document.createElement('span');
+          conta.className = 'conta';
+          conta.textContent = quantos;
+          botao.appendChild(conta);
+          botao.addEventListener('click', () => {
+            categoriaAtiva = chave;
+            desenharAbas();
+            desenharEntradas();
+          });
+          $('abas').appendChild(botao);
+        });
+      };
+
+      const desenharEntradas = () => {
+        const busca = $('busca').value.trim().toLowerCase();
+        const visiveis = ordenados().filter((t) => {
+          if (categoriaAtiva !== 'todos' && t.categoria !== categoriaAtiva) return false;
+          if (!busca) return true;
+          return (t.titulo + ' ' + semTags(t.html)).toLowerCase().includes(busca);
+        });
+
+        $('entradas').innerHTML = '';
+        visiveis.forEach((t) => {
+          const item = document.createElement('li');
+          const elo = document.createElement('a');
+          elo.href = '#/t/' + encodeURIComponent(t.id);
+
+          const meta = document.createElement('p');
+          meta.className = 'kicker';
+          const partes = [];
+          if (t.categoria) partes.push('<span class="cat">' + escapar(t.categoria) + '</span>');
+          if (dataBonita(t.data)) partes.push(escapar(dataBonita(t.data)));
+          partes.push(minutos(t.html) + ' min de leitura');
+          meta.innerHTML = partes.join(' · ');
+
+          const titulo = document.createElement('h2');
+          titulo.textContent = t.titulo;
+
+          const resumo = document.createElement('p');
+          resumo.className = 'resumo';
+          resumo.textContent = resumir(t.html);
+
+          elo.append(meta, titulo, resumo);
+          item.appendChild(elo);
+          $('entradas').appendChild(item);
+        });
+
+        const vazio = visiveis.length === 0;
+        $('vazio').hidden = !vazio;
+        $('vazio').textContent = busca
+          ? 'Nada encontrado para "' + $('busca').value.trim() + '".'
+          : 'Nenhum texto por aqui ainda.';
+      };
+
+      const escapar = (texto) => String(texto)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      $('busca').addEventListener('input', desenharEntradas);
+
+      // ---------- rotas ----------
+
+      const mostrarLista = () => {
+        document.title = dados.site.titulo || 'escreveneno';
+        $('texto').hidden = true;
+        $('lista').hidden = false;
+        desenharAbas();
+        desenharEntradas();
+        progresso();
+      };
+
+      const mostrarTexto = (id) => {
+        const t = dados.textos.find((item) => item.id === id);
+        if (!t) { location.hash = '#/'; return; }
+
+        document.title = t.titulo + ' — ' + (dados.site.titulo || 'escreveneno');
+        const partes = [];
+        if (t.categoria) partes.push('<span class="cat">' + escapar(t.categoria) + '</span>');
+        if (dataBonita(t.data)) partes.push(escapar(dataBonita(t.data)));
+        partes.push(minutos(t.html) + ' min de leitura');
+        $('meta').innerHTML = partes.join(' · ');
+        $('titulo').textContent = t.titulo;
+        $('corpo').innerHTML = t.html;
+        $('lista').hidden = true;
+        $('texto').hidden = false;
+        scrollTo(0, 0);
+        progresso();
+      };
+
+      const rotear = () => {
+        if (!dados) return;
+        const rota = location.hash.replace(/^#\/?/, '');
+        if (rota.startsWith('t/')) mostrarTexto(decodeURIComponent(rota.slice(2)));
+        else mostrarLista();
+      };
+
+      addEventListener('hashchange', rotear);
+
+      // ---------- carregar ----------
+
+      fetch('dados/textos.json?v=' + Date.now(), { cache: 'no-store' })
+        .then((resposta) => {
+          if (!resposta.ok) throw new Error(resposta.status);
+          return resposta.json();
+        })
+        .then((conteudo) => {
+          dados = conteudo;
+          dados.site = dados.site || {};
+          dados.categorias = dados.categorias || [];
+          dados.textos = dados.textos || [];
+
+          const nome = dados.site.titulo || 'escreveneno';
+          $('marca').textContent = nome;
+          $('site-titulo').textContent = nome;
+          if (dados.site.descricao) {
+            $('site-descricao').textContent = dados.site.descricao;
+            $('site-descricao').hidden = false;
+          }
+          $('aviso').hidden = true;
+          rotear();
+        })
+        .catch(() => {
+          $('aviso').textContent = 'Não consegui carregar os textos. Recarregue a página.';
+        });
     })();
   </script>
 </body>
